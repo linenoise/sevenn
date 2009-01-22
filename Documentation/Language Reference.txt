@@ -1,0 +1,111 @@
+                                 Neural Network Language
+                                   Language Reference
+                                       version 0.1
+                         by Dann Stayskal <dann@stayskal.com>
+
+   The Neural Network Language, NNL, is a framework for neural network sprcification and result management.  It allows creating, running, changing, and removing networks, nodes, edges, and functions. 
+
+
+                                  SYNTAX PRESENTATION
+
+   Syntax in this document is presented following some conventions.  Hard brackets '[' and ']' denote required elements.  Input data type casting is represented by type(args).  Within any element is the data type, a colon ':', and the element name, such as "[char(255):network_name]".  Parenthesis '(' and ')' denote optional segments. 
+   
+   int(size): an unsigned integer value.  Size denotes how many bits will be allocated to store the value.  Example: int(16) is a 16 bit integer that could be anything from 0 to 32,767.
+   
+   char(length): variable character data.  Length denotes how many characters the value holds.  Example: char(255) will declare the value as a set of 255 characters that could be "I am the very model of a modern major general".
+   
+   enum(options): enumerated values.  options are a set of possible states of the value, and are separated by pipes '|'.  Example: enum(vegetable|animal|mineral) is a value capable of being only 'vegetable', 'animal', or 'mineral'.   
+   
+   
+                                     RESERVED WORDS
+   
+   The reserved words in NNQL are presented in uppercase.    They are: CREATE, NETWORK, OF, TYPE, INPUTS, OUTPUTS, STEPS, SOLVER, NODE, EDGE, WEIGHT, ACTIVATION, NOTATION, FROM, TO, VALUE, VARIABLE.  NNQL implenentations should operate with uppercase, lowercase, or mixed case variants of all reserved words.
+   
+   
+                                    CREATING A NETWORK
+
+  A network is a system of interconnected nodes, edges, functions, and variables.  Networks are declared using the CREATE NETWORK syntax, nodes with the CREATE NODE syntax, edges with the CREATE EDGE syntax, and variables with the CREATE VARIABLE syntax.  Networks are stored separately from each other and may not be inter-referenced in this version of the language.  Once a node, edge, function, or network is created, it will remain in the system until explicitly destroyed by the DELETE operator.
+
+  To create a network, you need to know a name, it's type, and what type options to hand to it.  This version of the language supports 1 network type: iterative.  Iterative networks compute values by incrementing values and solving systems of node activation and edge weight functions.
+
+  CREATE NETWORK [char(256):network_name]
+    OF TYPE [enum(differential|matrix|iterative):network_type];
+      
+  To create a node, you have to know its name and optionally an activation function.  The activation funcition can be specified in infix, prefix, or postfix notation.      
+
+  CREATE NODE [char(256):node_name]
+    IN NETWORK [char(256):network_name]
+    ACTIVATION [int(32):activation_fucntion];
+      
+  To create a function bound to a node or an edge, you need to know the algebraic expression for the function and which variable in the equation is the dependent one.  The currently supported operators are  +, -, *, /, ^, sqrt, log, exp, sin, and cos.
+  
+  CREATE FUNCTION [char(256):function_name]
+    VALUE [char(256):function_data]
+    VARIABLE [char(256):dependent_variable];
+    
+  To create an edge between two nodes, you need to know which nodes it's connecting to and which weight function it will use.
+
+  CREATE EDGE [char(256):edge_name]
+    IN NETWORK [char(256):network_name]
+    FROM NODE [char(256):from_node]
+    TO NODE [char(256):to_node]
+    WEIGHT [int(32):weight_function];
+  
+  
+                                    CHANGING A NETWORK
+
+   From time to time, you may need to change some aspect of how the network functions.  This is done through the ALTER operator.  You can alter any aspect of any node, edge, network, or function except which network it's in.  If you have a node or edge in one network and require it in a different one, you must create it using the CREATE operator in the other network.
+
+  ALTER NETWORK [char(256):network_name]  CHANGE
+    TYPE [enum(differential|matrix|iterative):network_type];
+   
+  ALTER NODE [char(256):node_name] IN NETWORK [char(255):network_name] CHANGE
+    ACTIVATION [int(32):activation_fucntion];
+
+  ALTER EDGE [char(256):edge_name] IN NETWORK [char(256):network_name] CHANGE
+    (FROM NODE [char(256):from_node])
+    (TO NODE [char(256):to_node])
+    (WEIGHT [int(32):weight_function]);
+
+  ALTER FUNCTION [char(256):function_name] CHANGE
+    (VALUE [char(256):function_data])
+    (VARIABLE '[char(256):dependent_variable]);
+    
+    
+                                     RUNNING A NETWORK
+
+   If your network requires initial values, you can load them with the SET NODE and SET EDGE functions.  This will influence the first run only of the network, subsequent runs will be governed by activation functions for nodes, and weight functions for edges.
+
+  SET NODE [char(255):node_name] IN NETWORK [char(255):network_name] VALUE [int(32):node_value];
+
+  SET EDGE [char(255):edge_name] IN NETWORK [char(255):network_name] VALUE [int(32):edge_weight];
+
+   When your nodes, edges, and functions are in place and bound properly, you can run the network.  It will loop the number of times requested by the STEPS operator and pass node values through edge weight and node activation fuctions to compute the states of the network at discrete time intervals.  It will output a table of nodes by steps.
+
+  RUN NETWORK [char(255):network_name] STEPS [int(32):time_steps];
+      
+
+                                     REMOVING A NETWORK
+                             
+   To remove a network, node, edge, or function, use the DELETE operator.  If you have any nodes or edges in the network being deleted, they will also be deleted.  If those nodes and edges have functions bound to them, those functions will remain.
+  
+  DELETE NETWORK [char(256):network_name];
+    
+  DELETE NODE [char(256):node_name];
+  
+  DELETE EDGE [char(256):edge_name];
+
+  DELETE FUNCTION [char(256):function_name];
+                               
+  No backups are kept after deletion.  When you remove an entry, it is irretrievably gone.
+  
+  
+                                      FUTURE FEATURES
+                             
+   This is version 0.1 of the language, and many improvements are forthcoming:
+   
+   *  User-based authentication - requiring a username and password to access the daemon, allowing access only to those networks you've created or have been given access to
+   *  Differential networks - giving a user the capability to pass their equations through an ordinary differential equation solver.
+   *  Network interconnectivity / segmentation - allowing edges to connect nodes in two different networks
+   *  Stored procedures -  Stored procedures will automate repetetive tasks, simplifying cleanup after network runs, and enabling simple memory circuits to be created more easily.
+   *  Neural Network Markup Language - allowing the import and export of networks to and from SGML / XML compliant markup documents.

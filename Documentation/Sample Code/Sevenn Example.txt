@@ -1,0 +1,199 @@
+  Sevenn Example - A simple neural network which senses a switch between hot and
+cold.  A diagram of this network should be in <Sevenn Example Diagram.pdf> in 
+the same directory as this documentation.
+
+  First, we must create the network.  Since this network is to iterate through a
+set number of discrete time intervals, we will use an iterative model.
+
+		sevenn> create network hotcold of type iterative;
+		iterative network hotcold created.
+		
+		sevenn> show networks;
+		-----------------------------
+		Network Type      Nodes Edges
+		-----------------------------
+		hotcold iterative 0     0    
+		-----------------------------
+		
+  We now need to setup the functions the network will need.  Node activation and
+edge weight functions exist side-by-side.  For this network, we need two trigger
+functions (called oscillate and reverse_oscillate) to altrenate inputs between
+the hot and cold nodes.  We also need direct and double edge-weight functions to
+allow us to send single and double signals from one node to another, and one
+threshhold=2 function for many of the node activations.
+		
+		sevenn> create function direct value x variable x;
+		function direct created successfully with value x and variable x
+		
+		sevenn> create function oscillate value sin(x*3.1415/2-3.141592/2)*sin(x
+		*3.141/2-3.141/2) variable x;
+		function oscillate created successfully with value sin(x*3.14159/2-3.141
+		59/2)*sin(x*3.141/2-3.141/2) and variable x.
+		
+		sevenn> create function reverse_oscillate value sin(x*3.141/2)*sin(x*3.1
+		41/2) variable x;
+		function reverse_oscillate created successfully with value sin(x*3.141/2
+		)*sin(x*3.141/2) and variable x.
+		
+		sevenn> create function threshhold2 value x-1 variable x
+		function threshhold2 created successfully with value x-2 and variable x.
+		
+		sevenn> create function double value x*2 variable x;
+		function double created successfully with value x*2 and variable x.
+		
+		sevenn> show functions;
+		------------------------------------------------------------------------
+		Title             Function                                      Variable
+		------------------------------------------------------------------------
+		direct            x                                             x       
+		oscillate         sin(x*3.141/2-3.141/2)*sin(x*3.141/2-3.141/2) x       
+		reverse_oscillate sin(x*3.141/2)*sin(x*3.141/2)                 x       
+		threshhold2       x-1                                           x       
+		double            x*2                                           x       
+		------------------------------------------------------------------------
+		
+  Once the functions are all in place, we go to creating the nodes.  It's
+possible to specify nodes without an activation function, but it's far simpler
+to just do it all in one line.
+		
+		sevenn> create node hot in network hotcold activation oscillate;
+		node hot created successfully in hotcold with activation function oscill
+		ate.
+		
+		sevenn> set node hot in network hotcold value 2;
+		Node hot in network hotcold set to value 2
+		
+		sevenn> create node cold in network hotcold activation reverse_oscillate
+		;
+		node cold created successfully in hotcold with activation function rever
+		se_oscillate.
+		
+		sevenn> set node cold in network hotcold value 2;
+		Node cold in network hotcold set to value 2
+		
+		sevenn> create node sensehot in network hotcold activation direct
+		node sensehot created successfully in hotcold with activation function d
+		irect.
+		
+		sevenn> create node sensecold in network hotcold activation direct
+		node sensecold created successfully in hotcold with activation function 
+		direct.
+		
+		sevenn> create node node1 in network hotcold activation threshhold2;
+		node node1 created successfully in hotcold with activation function thre
+		shhold2.
+		
+		sevenn> create node node2 in network hotcold activation threshhold2;
+		node node2 created successfully in hotcold with activation function thre
+		shhold2.
+		
+		sevenn> create node node3 in network hotcold activation threshhold2;
+		node node3 created successfully in hotcold with activation function thre
+		shhold2.
+		
+		sevenn> create node node4 in network hotcold activation threshhold2;
+		node node4 created successfully in hotcold with activation function thre
+		shhold2.
+		
+		sevenn> create node node5 in network hotcold activation threshhold2;
+		node node5 created successfully in hotcold with activation function thre
+		shhold2.
+		
+		sevenn> show nodes from hotcold;
+		---------------------------------
+		Node      Value Function         
+		---------------------------------
+		hot       2     oscillate        
+		cold      2     reverse_oscillate
+		sensehot        direct           
+		sensecold       direct           
+		node1           threshhold2      
+		node2           threshhold2      
+		node3           threshhold2      
+		node4           threshhold2      
+		node5           threshhold2      
+		---------------------------------
+		
+  Once the nodes are in place, we create edges to connect them to each other.
+Edges and nodes can use the same functions, and in this example we use the 
+"direct" function in both nodes and edges.  This function simply returns 
+whatever it's given, making it useful for both nodes with a threshhold of 1, and
+edges with a straight "what comes in is what goes out" weight function.
+		
+		sevenn> create edge hot_to_sensehot in network hotcold from node hot to 
+		node sensehot weight oscillate;
+		edge hot_to_sensehot created successfully in hotcold from hot to senseho
+		t.
+		
+		sevenn> create edge cold_to_sensecold in network hotcold from node cold 
+		to node sensecold weight reverse_oscillate;
+		edge cold_to_sensecold created successfully in hotcold from cold to sens
+		ecold.
+		
+		sevenn> create edge sensehot_to_node1 in network hotcold from node sense
+		hot to node node1 weight double;
+		edge sensehot_to_node1 created successfully in hotcold from sensehot to 
+		node1.
+		
+		sevenn> create edge sensecold_to_node2 in network hotcold from node sens
+		ecold to node node2 weight double;
+		edge sensecold_to_node2 created successfully in hotcold from sensecold t
+		o node2.
+		
+		sevenn> create edge node1_to_node3 in network hotcold from node node1 to
+		 node node3 weight double;     
+		edge node1_to_node3 created successfully in hotcold from node1 to node3.
+		
+		sevenn> create edge sensehot_to_node3 in network hotcold from node sense
+		hot to node node3 weight double;
+		edge sensehot_to_node3 created successfully in hotcold from sensehot to 
+		node3.
+		
+		sevenn> create edge node3_to_node5 in network hotcold from node node3 to
+		 node node5 weight direct;
+		edge node3_to_node5 created successfully in hotcold from node3 to node5.
+		
+		sevenn> create edge node2_to_node4 in network hotcold from node node2 to
+		 node node4 weight double 
+		edge node2_to_node4 created successfully in hotcold from node2 to node4.
+		
+		sevenn> create edge sensecold_to_node4 in network hotcold from node sens
+		ecold to node node4 weight double;
+		edge sensecold_to_node4 created successfully in hotcold from sensecold t
+		o node4.
+		
+		sevenn> create edge node4_to_node5 in network hotcold from node node4 to
+		 node node5 weight direct;
+		edge node4_to_node5 created successfully in hotcold from node4 to node5.
+		
+		sevenn> show edges from hotcold;
+		--------------------------------------------------------------
+		Edge               From      To        Value Function         
+		--------------------------------------------------------------
+		hot_to_sensehot    hot       sensehot        oscillate        
+		cold_to_sensecold  cold      sensecold       reverse_oscillate
+		sensehot_to_node1  sensehot  node1           double           
+		sensecold_to_node2 sensecold node2           double           
+		node4_to_node5     node4     node5           direct           
+		sensecold_to_node4 sensecold node4           double           
+		node2_to_node4     node2     node4           double           
+		node3_to_node5     node3     node5           direct           
+		sensehot_to_node3  sensehot  node3           double           
+		node1_to_node3     node1     node3           double           
+		--------------------------------------------------------------
+		
+  Now that everything's in place, we can run the network.  The table that
+follows is illustrated in <Sevenn Example Diagram.pdf>.  As of the fifth
+step in this network, the target node (node5) is reached, signalling that
+the network recognized the switches between hot and cold.
+		
+		sevenn> run network hotcold steps 5
+		--------------------------------------------------------------
+		Step cold hot node1 node2 node3 node4 node5 sensecold sensehot
+		--------------------------------------------------------------
+		1    1    0   0     0     0     0     0     0         0       
+		2    0    1   0     0     0     0     0     1         0       
+		3    1    0   0     1     0     1     0     0         1       
+		4    0    1   1     0     1     1     0     1         0       
+		5    1    0   0     1     1     1     1     0         1       
+		--------------------------------------------------------------

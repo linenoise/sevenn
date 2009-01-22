@@ -1,0 +1,38 @@
+h1. The Scalable Environment for Versatile Neural Networks
+
+Sevenn is a system to facilitate storage, caching, management and running of neural networks.  It is written entirely in Perl, using SQL for storage and caching.  It uses SOAP to exchange data between the client and the server.  It parses and executes NNL (Neural Network Language) statements.  There is no limit to the number of nodes, edges, networks, and functions you can store and simulate other than the amount of space available to store them on the server.
+
+h2. The SEVENN Server
+
+The Sevenn server uses the Simple Object Access Protocol to exchange data with clients.  It operates in the cgi-bin directory of a webserver, and answers NNL requests as they come in.  When data must be stored between requests, it does so in normalized database tables.  The server program, @SevennSrv.pl@, is a simple function call to a set of perl modules installed in the server's library.  The vast majority of Sevenn server code is stored in these modules, namespaced under @Sevenn@.
+  
+To install Sevenn on a server:
+  
+* copy @Sevenn.pm@ and directory Sevenn to wherever your system keeps its perl modules
+* copy @SevennSrv.pl@ to the cgi-bin directory of the webserver on that server
+* create a user and database in your SQL server which sevenn can access
+* create the necessary SQL tables using the syntax from @sevenn.sql@
+* create an @/etc/sevenn.ini@ file from the example given in @sevenn.ini.example@
+
+To test whether or not perl recognizes the modules, issue the command @perl -MSevenn@ from the shell prompt.  If anything happens, something went wrong.  If nothing happens, the modules are installed.  You can press @^D@ to exit.  Once these are in place, you can try to connect with the command line client, or most any other SOAP-compliant client.
+
+
+h2. The SEVENN Client
+   
+The default Sevenn client is command-line only, called @sevenn.pl@.  This script can be run from any system that can run perl and communicate with the server.  When you run it, you're presented with a @sevenn>@ prompt after some version information:
+   
+	$ ./sevenn.pl 
+	>>> Reading configuration file sevenn.ini
+	>>> Connecting to the SEVENN server
+	>>> Entering interactive mode.  Type 'quit' to quit or 'help' for help.
+	Sevenn Neural Network Daemon version 0.1
+	Running as pid 1766 by user 70 on Erdos.local
+	sevenn> 
+
+The sevenn command-line client sends NNL requests to the sevenn server, terminated optionaly by semicolons.  Only one request is allowed per line.  If you choose to have the client and server on the same machine, they can share an @/etc/sevenn.ini@ configuration file.
+   
+The SOAP protocol used by the Sevenn system is HTTP based - this means it is versatile, but can timeout.  The timeout for data returns is generally 3 to 5 minutes, depending on your platform.  Later versions will use RPC or a similar protocol to allow less interoperability with other platforms with the gain of no timeouts for crunching large networks.
+
+h2. License
+
+Sevenn was written by Dann Stayskal &lt;dann@stayskal.com&gt; and is licensed under the GPL version 2. For more information, see the attached @license.txt@ file.

@@ -1,0 +1,5 @@
+Sevenn follows the Neural Network Query Protocol (NNQP)
+To show all networks, type:
+  SHOW NETWORKS;
+To run a network, type:
+  RUN NETWORK (network) VARIABLES variable1=value1 variable2=value2...

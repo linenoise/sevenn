@@ -1,0 +1,14 @@
+[server]
+uri=http://localhost/Sevenn
+proxy=http://localhost/~dann/SevennSrv.pl
+
+[client]
+logfile=sevenn.log
+prompt=sevenn> 
+helpfile=svefnn-help.txt
+
+[mysql]
+database=sevenn
+host=localhost
+username=sevenn
+password=yourpassword
