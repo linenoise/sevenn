@@ -35,4 +35,4 @@ The SOAP protocol used by the Sevenn system is HTTP based - this means it is ver
 
 h2. License
 
-Sevenn was written by Dann Stayskal &lt;dann@stayskal.com&gt; and is licensed under the GPL version 2. For more information, see the attached @license.txt@ file.
+Sevenn was written by Danne Stayskal &lt;danne@stayskal.com&gt; and is licensed under the GPL version 2. For more information, see the attached @license.txt@ file.

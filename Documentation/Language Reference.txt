@@ -1,7 +1,7 @@
                                  Neural Network Language
                                    Language Reference
                                        version 0.1
-                         by Dann Stayskal <dann@stayskal.com>
+                         by Danne Stayskal <danne@stayskal.com>
 
    The Neural Network Language, NNL, is a framework for neural network sprcification and result management.  It allows creating, running, changing, and removing networks, nodes, edges, and functions. 
 
